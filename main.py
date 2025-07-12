@@ -98,6 +98,6 @@ async def analyze_batch(request: SentimentArrayRequest):
             label = "LABEL_2"
         results.append({
             "label": label,
-            "score": float(result["score"]) 
+            "score": float(result["score"]) / 100
         })
     return {"result": results}
