@@ -84,3 +84,20 @@ async def analyze_sentiment_api(request: SentimentRequest):
             }
         ]
     }
+    
+@app.post("/api/analyze-sentiment-batch")
+async def analyze_batch(request: SentimentArrayRequest):
+    results = []
+    for text in request.texts:
+        result = model.analyze(text)
+        if result["sentiment"] == "Negative":
+            label = "LABEL_0"
+        elif result["sentiment"] == "Neutral":
+            label = "LABEL_1"
+        else:
+            label = "LABEL_2"
+        results.append({
+            "label": label,
+            "score": float(result["score"]) 
+        })
+    return {"result": results}
