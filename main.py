@@ -59,3 +59,28 @@ async def predict_sentiments(request: SentimentArrayRequest):
             "sentiment": sentiment
         })
     return {"results": results}
+
+class SentimentRequest(BaseModel):
+    text: str
+
+# API for external apps (like your Node.js function)
+@app.post("/api/analyze-sentiment")
+async def analyze_sentiment_api(request: SentimentRequest):
+    result = model.analyze(request.text)
+    
+    # Convert sentiment to label format expected by the Node.js app
+    if result["sentiment"].lower() == "negative":
+        label = "LABEL_0"
+    elif result["sentiment"].lower() == "neutral":
+        label = "LABEL_1"
+    else:
+        label = "LABEL_2"
+    
+    return {
+        "result": [
+            {
+                "label": label,
+                "score": float(result["score"])  # Return score as decimal
+            }
+        ]
+    }
